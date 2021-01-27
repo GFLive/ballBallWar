@@ -1,6 +1,4 @@
 $(() => {
-  const ip = 'http://localhost:3000'
-
   $('#register').on('submit', function (e) {
     e.preventDefault()
     let username = $('.username').val().trim()

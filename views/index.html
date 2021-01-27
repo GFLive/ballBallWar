@@ -6,8 +6,25 @@
   <title>index</title>
 
   <link rel="stylesheet" href="/public/css/common.css">
+  <link rel="stylesheet" href="/public/css/normal.css">
+  <link rel="stylesheet" href="/public/css/index.css">
 </head>
 <body>
-  你好啊{{ user.username }}
+  <div id="app">
+    <h2>{{ user.username }}</h2>
+
+    <div class="totalUser">当前在线用户：<span>0</span></div>
+    <div class="activeUser">当前游戏用户：<span>0</span></div>
+
+    <div class="buttons">
+      <button class="join">加入游戏</button>
+      <button class="leave">登出</button>
+    </div>
+  </div>
+
+  <script src="/public/js/jquery.js"></script>
+  <script src="/public/js/common.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/public/js/index.js"></script>
 </body>
 </html>

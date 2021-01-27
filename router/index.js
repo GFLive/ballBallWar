@@ -1,29 +1,21 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const session = require('express-session')
 const User = require('../modules/user')
 
 // 创建路由
 const router = express.Router()
-// router.all('*', function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
-//   res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-//   res.header("X-Powered-By",' 3.2.1')
-//   if(req.method=="OPTIONS") res.send(200);/*让options请求快速返回*/
-//   else  next();
-// });
+router.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*")
+  // res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+  // res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  // res.header("X-Powered-By",' 3.2.1')
+  // if(req.method=="OPTIONS") res.send(200);/*让options请求快速返回*/
+  // else  next();
+  next()
+});
 
 // 使用bodyParser
 router.use(bodyParser.urlencoded({ extended: false }));
-
-// 使用session
-router.use(session({
-  // 掩码
-  secret: 'Bender',
-  resave: false,
-  saveUninitialized: true
-}))
 
 // 配置路由
 router.get('/', (req, res) => {
@@ -74,7 +66,7 @@ router.post('/register', (req, res) => {
   let password = req.body.password
 
   if (!username || !password) {
-    res.status(200).json({
+    return res.status(200).json({
       err: 1,
       msg: '用户名或密码为空'
     })
@@ -84,10 +76,12 @@ router.post('/register', (req, res) => {
     username
   }).then(user => {
     if (!user) {
-      new User({
+      user = new User({
         username, 
         password
-      }).save(() => {
+      })
+
+      user.save(() => {
         req.session.user = user
         req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 1
 
@@ -102,6 +96,14 @@ router.post('/register', (req, res) => {
         msg: '用户名已存在'
       })
     }
+  })
+})
+
+router.get('/logout', (req, res) => {
+  delete req.session.user
+  res.status(200).json({
+    err: 0,
+    msg: 'ok.'
   })
 })
 
