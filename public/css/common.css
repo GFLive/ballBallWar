@@ -1,0 +1,11 @@
+html, body,
+form, label, input, button
+{margin: 0; padding: 0; box-sizing: border-box;}
+
+ul, ol {
+  list-style: none;
+}
+
+input, button {
+  outline: none;
+}
