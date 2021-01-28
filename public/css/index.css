@@ -41,8 +41,8 @@ h2 {
   border: none;
   font-size: 20px;
   border-radius: 5px;
-  background: #4861eb;
+  background: whitesmoke;
 }
 .buttons button:hover {
-  background: #61a9f1;
+  background: #a7c9eb;
 }

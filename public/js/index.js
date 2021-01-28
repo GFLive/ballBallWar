@@ -13,6 +13,16 @@ $(() => {
     })
   })
 
+  $('.join').on('click', () => {
+    $.ajax({
+      url: ip + '/requestGame',
+      type: 'get',
+      success: data => {
+        location.href = '/gamePage'
+      }
+    })
+  })
+
   socket.on('updateUsers', data => {
     $('.totalUser span').text(data.length)
   })

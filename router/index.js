@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const store = require('../modules/common')
 const User = require('../modules/user')
 
 // 创建路由
@@ -48,6 +49,7 @@ router.post('/login', (req, res) => {
     } else {
       // 登录成功    1 天过期
       req.session.user = user
+      req.session.gameState = store.WAITSTATE
       req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 1
 
       res.status(200).json({
@@ -83,6 +85,7 @@ router.post('/register', (req, res) => {
 
       user.save(() => {
         req.session.user = user
+        req.session.gameState = store.WAITSTATE
         req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 1
 
         res.status(200).json({
@@ -105,6 +108,28 @@ router.get('/logout', (req, res) => {
     err: 0,
     msg: 'ok.'
   })
+})
+
+router.get('/requestGame', (req, res) => {
+  if (req.session.user && req.session.gameState === store.WAITSTATE) {
+    req.session.gameState = store.GAMESTATE
+    res.status(200).json({
+      err: 0,
+      msg: 'ok.'
+    })
+  } else {
+    res.redirect('/login')
+  }
+})
+
+router.get('/gamePage', (req, res) => {
+  if (req.session.user && req.session.gameState === store.GAMESTATE) {
+    res.render('gamePage.html', {
+      user: req.session.user
+    })
+  } else {
+    res.redirect('/login')
+  }
 })
 
 // 导出
