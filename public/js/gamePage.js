@@ -4,7 +4,7 @@ $(() => {
   // global
   const doublePI = Math.PI * 2
   const gameMap = {}  // 地图对象
-  const delayed = 1
+  const delayed = 5
   let player = {}  // 玩家对象
   // const updateCnts =  1  // 几轮更新数据
   const dir = [false, false, false, false]  // 上下左右
@@ -76,10 +76,33 @@ $(() => {
     // 渲染玩家
     for (let i = 0, len = players.length; i < len; i++) {
       // if (players[i].name === player.name) continue ;
-      ctx.beginPath()
-      ctx.fillStyle = players[i].color
-      ctx.arc(players[i].x, players[i].y, players[i].radius, 0, doublePI)
-      ctx.fill()
+      if (players[i].name === '斌斌') {
+        ctx.beginPath() 
+        // 创建线性渐变
+        let grd = ctx.createRadialGradient(players[i].x, players[i].y, 5, players[i].x, players[i].y, players[i].radius)
+        grd.addColorStop(0, "white");
+        grd.addColorStop(0, "skyblue");
+        grd.addColorStop(1, "pink"); 
+        // 填充渐变
+        ctx.fillStyle = grd;
+        ctx.arc(players[i].x, players[i].y, players[i].radius, 0, doublePI)
+        ctx.fill()
+
+        let nums = parseInt(Math.random() * 20)
+        for (let j = 0; j < nums; j++) {
+          ctx.beginPath()
+          ctx.fillStyle = 'aqua'
+          let x = players[i].x + (players[i].radius + Math.random() * players[i].radius) * [-1, 1][parseInt(Math.random() * 2)]
+          let y = players[i].y + (players[i].radius + Math.random() * players[i].radius) * [-1, 1][parseInt(Math.random() * 2)]
+          ctx.arc(x, y, parseInt(Math.random() * 3), 0, doublePI)
+          ctx.fill()
+        }
+      } else {
+        ctx.beginPath()
+        ctx.fillStyle = players[i].color
+        ctx.arc(players[i].x, players[i].y, players[i].radius, 0, doublePI)
+        ctx.fill()
+      }
     }
 
     ctx.restore()

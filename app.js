@@ -107,19 +107,20 @@ io.on('connection', socket => {
     let username = socket.request.session.user.username
     let player = entity.players.find(item => item.name === username)
     if (!player) {
+      let colors = ["#468966", "#FFF0A5", "#FFB03B", "#B64926", "#8E2800", "white", "blue", "tomato", "red", "yellow"]
+
       player = {
         radius: store.playerRaiuds,
-        color: '#42BD87',
+        color: colors[parseInt(Math.random() * colors.length)],
         name: user.username,
         speed: store.playerSpeed
       }
       if (player.name === '斌斌') {
-        player.color = 'skyblue'
         player.radius = 17
       }
 
-      player.x = parseInt(Math.random() * (store.mapWidth - store.playerRaiuds) + store.playerRaiuds)
-      player.y = parseInt(Math.random() * (store.mapHeight - store.playerRaiuds) + store.playerRaiuds)
+      player.x = parseInt(Math.random() * (store.mapWidth - store.playerRaiuds * 2) + store.playerRaiuds)
+      player.y = parseInt(Math.random() * (store.mapHeight - store.playerRaiuds * 2) + store.playerRaiuds)
 
       entity.players.push(player)
     }

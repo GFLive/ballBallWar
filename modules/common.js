@@ -8,6 +8,6 @@ module.exports = {
 
   // 玩家基本信息
   playerRaiuds: 10,
-  playerSpeed: 10
+  playerSpeed: 1
 }
 
