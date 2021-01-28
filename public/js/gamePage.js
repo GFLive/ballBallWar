@@ -4,7 +4,7 @@ $(() => {
   // global
   const doublePI = Math.PI * 2
   const gameMap = {}  // 地图对象
-  const delayed = 10
+  const delayed = 1
   let player = {}  // 玩家对象
   // const updateCnts =  1  // 几轮更新数据
   const dir = [false, false, false, false]  // 上下左右
@@ -104,7 +104,7 @@ $(() => {
     requestId = requestAnimationFrame(main)
   })
 
-  socket.on('updatePlayers', data => {
+  socket.on('updateActivePlayers', data => {
     players = data
     players.sort((a, b) => a.radius - b.radius)
 

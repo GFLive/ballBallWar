@@ -9,7 +9,7 @@ const store = require('./modules/common')
 
 // global
 const PORT = 3000
-const delayed = 20
+const delayed = 5
 const users = []  // 用户大厅数量
 const players = []  // 玩家数量
 const maxFoods = 2000 // 最大食物数量
@@ -129,16 +129,16 @@ io.on('connection', socket => {
 
     // 接受自身位置
     socket.on('sendPlayerMessage', data => {
-      // for (let key in data) {
-      //   player[key] = data[key]
-      // }
+      for (let key in data) {
+        player[key] = data[key]
+      }
     })
   }
 })
 
 // 定时更新
 let globalTimer = setInterval(() => {
-  io.emit('updatePlayers', entity.players)
+  io.emit('updateActivePlayers', entity.players)
 }, delayed)
 
 server.listen(PORT, () => console.log('server is running in ' + PORT))
