@@ -21,6 +21,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 // 配置路由
 router.get('/', (req, res) => {
   if (req.session.user) {
+    req.session.gameState = store.WAITSTATE
     res.render('index.html', {
       user: req.session.user
     })
@@ -49,7 +50,6 @@ router.post('/login', (req, res) => {
     } else {
       // 登录成功    1 天过期
       req.session.user = user
-      req.session.gameState = store.WAITSTATE
       req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 1
 
       res.status(200).json({
@@ -85,7 +85,6 @@ router.post('/register', (req, res) => {
 
       user.save(() => {
         req.session.user = user
-        req.session.gameState = store.WAITSTATE
         req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 1
 
         res.status(200).json({

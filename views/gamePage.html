@@ -11,7 +11,11 @@
   <link rel="stylesheet" href="/public/css/gamePage.css">
 </head>
 <body>
-  <h1>GAMEPAGE</h1>
+  <header>
+    <div class="left"></div>
+    <h1>{{ user.username }}</h1>
+    <div class="right">当前游戏人数 : <span>0</span></div>
+  </header>
   <canvas id="canvas">
     换Chrome吧
   </canvas>
@@ -19,6 +23,7 @@
   <script src="/public/js/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/public/js/modules/vector2D.js"></script>
+  <script src="/public/js/modules/ball.js"></script>
   <script src="/public/js/gamePage.js"></script>
 </body>
 </html>

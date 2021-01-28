@@ -15,6 +15,7 @@ h2 {
   text-align: center;
   font-size: 30px;
   color: white;
+  margin-bottom: 40px;
 }
 
 .totalUser, .activeUser {
@@ -23,10 +24,14 @@ h2 {
   margin-bottom: 30px;
   font-size: 16px;
   font-weight: bold;
+  margin-left: 50px;
+}
+.totalUser span, .activeUser span {
+  margin-left: 30px;
 }
 
 .buttons {
-  margin-top: 40px;
+  margin-top: 60px;
   width: 100%;
   display: flex;
 }

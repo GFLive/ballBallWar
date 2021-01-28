@@ -26,4 +26,9 @@ $(() => {
   socket.on('updateUsers', data => {
     $('.totalUser span').text(data.length)
   })
+
+  socket.on('updatePlayers', data => {
+    console.log(data)
+    $('.activeUser span').text(data.length)
+  })
 })

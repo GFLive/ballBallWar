@@ -1,0 +1,29 @@
+html, body {
+  background: palegreen;
+}
+
+header {
+  margin: 20px auto;
+  display: none;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  color: gray;
+  text-align: center;
+}
+.left, .right {
+  width: 200px;
+}
+h1 {
+  flex: 1;  
+  text-align: center;
+  color: orange;
+}
+
+#canvas {
+  display: block;
+  border: 1px solid #aaaaaa;
+  margin: 0 auto;
+  display: none;
+  background: #3a4a5a;
+}
