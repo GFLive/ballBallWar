@@ -13,7 +13,7 @@ const delayed = 5
 const createFoodDelayed = 500
 const users = []  // 用户大厅数量
 const players = []  // 玩家数量
-const maxFoods = 500 // 最大食物数量
+const maxFoods = 100 // 最大食物数量
 const baseFoods = 20 // 每批次生成的食物数量
 const baseFoodRadius = 2 
 const entities = {  // 实体对象
@@ -121,7 +121,7 @@ io.on('connection', socket => {
         name: user.username,
         speed: store.playerSpeed
       }
-      if (player.name === '斌斌') {
+      if (player.name === 'Bytwo') {
         player.radius += 10
       }
 
@@ -157,7 +157,7 @@ io.on('connection', socket => {
             if (!entities.foods[j]) continue ;
 
             if (food.id === entities.foods[j].id) {
-              player.radius += 0.05
+              player.radius += 0.03
               if (player.radius > store.maxPlayerRadius) {
                 player.radius = store.maxPlayerRadius
               }

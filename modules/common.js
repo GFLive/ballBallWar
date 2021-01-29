@@ -3,12 +3,12 @@ module.exports = {
   WAITSTATE: 0,
   
   // 地图宽高
-  mapWidth: 1000,
-  mapHeight: 600,
+  mapWidth: 2000,
+  mapHeight: 1200,
 
   // 玩家基本信息
   playerRaiuds: 100,
-  playerSpeed: 5,
+  playerSpeed: 4,
   maxPlayerRadius: 350,
 
   foodCnt: 0,
