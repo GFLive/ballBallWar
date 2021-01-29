@@ -14,7 +14,8 @@ $(() => {
     a: 2,
     d: 3
   }
-  let players = [] // 其他玩家数组
+  let players = [] // 玩家数组
+  let foods = [] // 食物数组
 
 
   // 初始化
@@ -46,11 +47,25 @@ $(() => {
     let offsetY = (dir[dirMap['s']] - dir[dirMap['w']]) * player.speed
     player.x += offsetX
     player.y += offsetY
-    // socket.emit('sendPlayerMessage', player)
 
+    // 越界
+    // let limit = player.radius
+    // if ((player.x < limit || player.x > gameMap.width - limit) && (player.y < limit || player.y > gameMap.height - limit)) {
+    //   limit = player.radius * Math.sin(Math.PI * 0.25)
+    // }
+    let limit = player.radius * Math.sin(Math.PI * 0.25)
+    if (player.x < limit) player.x = limit
+    else if (player.x > gameMap.width - limit) player.x = gameMap.width - limit
+    if (player.y < limit) player.y = limit
+    else if (player.y > gameMap.height - limit) player.y = gameMap.height - limit
+
+    // 碰撞检测
+    collisionPlayerAndFoods()
+    
     requestId = requestAnimationFrame(main)
   }
 
+  // 定时发送玩家消息
   let globalTimer = setInterval(() => {
     socket.emit('sendPlayerMessage', player)
   }, delayed)
@@ -73,15 +88,28 @@ $(() => {
 
     ctx.clearRect(0,  0, gameMap.width, gameMap.height)
 
+    // 渲染食物
+    for (let i = 0, len = foods.length; i < len; i++) {
+      let food = foods[i]
+
+      if (food === undefined) continue ;
+      ctx.beginPath()
+      ctx.fillStyle  = food.color
+      ctx.arc(food.x, food.y, food.radius, 0, doublePI)
+      ctx.fill()
+    }
+
     // 渲染玩家
     for (let i = 0, len = players.length; i < len; i++) {
-      // if (players[i].name === player.name) continue ;
+      if (players[i].name === player.name) {
+        player.radius = players[i].radius
+      }
       if (players[i].name === '斌斌') {
         ctx.beginPath() 
         // 创建线性渐变
-        let grd = ctx.createRadialGradient(players[i].x, players[i].y, 5, players[i].x, players[i].y, players[i].radius)
+        let grd = ctx.createRadialGradient(players[i].x, players[i].y, 0, players[i].x, players[i].y, players[i].radius)
         grd.addColorStop(0, "white");
-        grd.addColorStop(0, "skyblue");
+        grd.addColorStop(0.4, "skyblue");
         grd.addColorStop(1, "pink"); 
         // 填充渐变
         ctx.fillStyle = grd;
@@ -94,7 +122,7 @@ $(() => {
           ctx.fillStyle = 'aqua'
           let x = players[i].x + (players[i].radius + Math.random() * players[i].radius) * [-1, 1][parseInt(Math.random() * 2)]
           let y = players[i].y + (players[i].radius + Math.random() * players[i].radius) * [-1, 1][parseInt(Math.random() * 2)]
-          ctx.arc(x, y, parseInt(Math.random() * 3), 0, doublePI)
+          ctx.arc(x, y, parseInt(Math.random() * players[i].radius * 0.2), 0, doublePI)
           ctx.fill()
         }
       } else {
@@ -106,6 +134,25 @@ $(() => {
     }
 
     ctx.restore()
+  }
+
+  function collisionPlayerAndFoods () {
+    for (let i = 0, len = foods.length; i < len; i++) {
+      let food = foods[i]
+      if (food === undefined) continue ;
+
+      if (distance(food.x, food.y, player.x, player.y) < Math.abs(player.radius - food.radius)) {
+        food.isDead = true
+      }
+    }
+    socket.emit('sendFoods', {
+      player,
+      foods
+    })
+  }
+
+  function distance (x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
   }
 
   // socket
@@ -130,6 +177,13 @@ $(() => {
   socket.on('updateActivePlayers', data => {
     players = data
     players.sort((a, b) => a.radius - b.radius)
+
+    cancelAnimationFrame(requestId)
+    requestId = requestAnimationFrame(main)
+  })
+
+  socket.on('updateFoods', data => {
+    foods = data
 
     cancelAnimationFrame(requestId)
     requestId = requestAnimationFrame(main)

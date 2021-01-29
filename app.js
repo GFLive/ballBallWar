@@ -10,13 +10,21 @@ const store = require('./modules/common')
 // global
 const PORT = 3000
 const delayed = 5
+const createFoodDelayed = 500
 const users = []  // 用户大厅数量
 const players = []  // 玩家数量
-const maxFoods = 2000 // 最大食物数量
-const entity = {  // 实体对象
+const maxFoods = 500 // 最大食物数量
+const baseFoods = 20 // 每批次生成的食物数量
+const baseFoodRadius = 2 
+const entities = {  // 实体对象
   players: [],  // 玩家
   foods: []    // 食物
 }
+const colors = ["#468966", "#FFF0A5", "#FFB03B", "#B64926", "#8E2800", "white", "blue", "tomato", "red", "yellow"]
+
+
+let globalTimer = null
+let createFoodTimer = null
 
 // art-template 配置
 app.engine('html', require('express-art-template'))
@@ -105,10 +113,8 @@ io.on('connection', socket => {
     })
 
     let username = socket.request.session.user.username
-    let player = entity.players.find(item => item.name === username)
+    let player = entities.players.find(item => item.name === username)
     if (!player) {
-      let colors = ["#468966", "#FFF0A5", "#FFB03B", "#B64926", "#8E2800", "white", "blue", "tomato", "red", "yellow"]
-
       player = {
         radius: store.playerRaiuds,
         color: colors[parseInt(Math.random() * colors.length)],
@@ -116,13 +122,13 @@ io.on('connection', socket => {
         speed: store.playerSpeed
       }
       if (player.name === '斌斌') {
-        player.radius = 17
+        player.radius += 10
       }
 
       player.x = parseInt(Math.random() * (store.mapWidth - store.playerRaiuds * 2) + store.playerRaiuds)
       player.y = parseInt(Math.random() * (store.mapHeight - store.playerRaiuds * 2) + store.playerRaiuds)
 
-      entity.players.push(player)
+      entities.players.push(player)
     }
 
     // 发送自身位置
@@ -130,16 +136,75 @@ io.on('connection', socket => {
 
     // 接受自身位置
     socket.on('sendPlayerMessage', data => {
-      for (let key in data) {
-        player[key] = data[key]
+      // 防止作弊
+      if (socket.request.session.user.username !== data.name) return ;
+
+      // for (let key in data) {
+      //   player[key] = data[key]
+      // }
+      player.x = data.x
+      player.y = data.y
+    })
+
+    // 接受食物位置
+    socket.on('sendFoods', data => {
+      for (let i = 0, len = data.foods.length; i < len; i++) {
+        let food = data.foods[i]
+        if (food === undefined) continue ;
+
+        if (food.isDead && store.distance(food.x, food.y, player.x, player.y) < Math.abs(player.radius - food.radius)) {
+          for (let j = 0, len_j = entities.foods.length; j < len_j; j++) {
+            if (!entities.foods[j]) continue ;
+
+            if (food.id === entities.foods[j].id) {
+              player.radius += 0.05
+              if (player.radius > store.maxPlayerRadius) {
+                player.radius = store.maxPlayerRadius
+              }
+
+              entities.foods.splice(j, 1)
+            }
+          }
+        }
       }
     })
   }
 })
 
-// 定时更新
-let globalTimer = setInterval(() => {
-  io.emit('updateActivePlayers', entity.players)
-}, delayed)
+server.listen(PORT, () => {
+  console.log('server is running in ' + PORT)
 
-server.listen(PORT, () => console.log('server is running in ' + PORT))
+  // 启动游戏
+  // 定时更新
+  globalTimer = setInterval(() => {
+    io.emit('updateActivePlayers', entities.players)
+
+    // 发送食物之前清除无用的食物
+    // for (let i = 0, len = entities.foods.length; i < len; i++) {
+    //   let food = entities.foods[i]
+    //   if (food.isDead) {
+    //     entities.foods.splice(i--, 1)
+    //     len--
+    //   }
+    // }
+    io.emit('updateFoods', entities.foods)
+  }, delayed)
+
+  // 生成食物
+  createFoodTimer = setInterval(() => {
+    if (entities.foods.length >= maxFoods) return ;
+
+    for (let i = 0; i < baseFoods; i++) {
+      let food = {
+        x: parseInt(Math.random() * (store.mapWidth - 2 * baseFoodRadius) + baseFoodRadius),
+        y: parseInt(Math.random() * (store.mapHeight - 2 * baseFoodRadius) + baseFoodRadius),
+        color: colors[parseInt(Math.random() * colors.length)],
+        radius: baseFoodRadius,
+        isDead: false,
+        id: store.foodCnt++
+      }
+      
+      entities.foods.push(food)
+    }
+  }, createFoodDelayed)
+})
