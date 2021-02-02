@@ -7,8 +7,8 @@ module.exports = {
   mapHeight: 1200,
 
   // 玩家基本信息
-  playerRaiuds: 100,
-  playerSpeed: 4,
+  playerRaiuds: 10,
+  playerSpeed: 2,
   maxPlayerRadius: 350,
 
   foodCnt: 0,

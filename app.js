@@ -157,7 +157,7 @@ io.on('connection', socket => {
             if (!entities.foods[j]) continue ;
 
             if (food.id === entities.foods[j].id) {
-              player.radius += 0.03
+              player.radius += 1
               if (player.radius > store.maxPlayerRadius) {
                 player.radius = store.maxPlayerRadius
               }
